@@ -309,16 +309,13 @@ class RedshiftAutoSchema():
             column = column[column.notnull()]
 
             if all(str(x).lower() in ["true", "false", "t", "f", "0", "1"] for x in column.unique()) and identifier is False:
-                return 'bool'
+                return 'varchar(10)'
             else:
                 try:
                     column.astype(float)
                     try:
                         if np.array_equal(column.fillna(True).astype(float), column.fillna(True).astype(int)):
-                            if column.max() <= 2147483647 and column.min() >= -2147483648:
-                                return 'int4'
-                            else:
-                                return 'int8'
+                            return 'bigint'
                         else:
                             return 'float8'
                     except TypeError:
